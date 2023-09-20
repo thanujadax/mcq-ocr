@@ -1,6 +1,6 @@
 {
     "version" : "v1",
-    "num_questions" : 90,
+    "num_questions" : 80,
     "inputs" : {
         "template" : "samples/templates/1.jpg",
         "marking_scheme" : "samples/marking_schemes/1.jpg",
