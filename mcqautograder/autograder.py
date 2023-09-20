@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageFilter, ImageEnhance, ImageDraw
 import cv2
 from numpy import linalg as LA
 import imutils
@@ -278,6 +278,32 @@ def get_configuration_parameter(cmd_line_argument, config_file_parameter):
         return cmd_line_argument
     return config_file_parameter
 
+def save_bubble_coordinates_visualization(template_path, bubble_coordinates, output_folder, filename="bubbles_visualization.png"):
+    # Load the template image
+    img = Image.open(template_path)
+    
+    # Convert to draw mode to draw on the image
+    draw = ImageDraw.Draw(img)
+    
+    # Define a radius in pixels for the circle. Given that the image might be resized and not always at the same scale, 
+    # we are assuming a general value. However, if you know the DPI (dots per inch) or the scale of the image, 
+    # you can adjust this value accordingly to represent 5mm.
+    # For example, if you know the image is at 300 DPI, then 5mm is roughly 59 pixels (5mm * 300 DPI / 25.4 mm/inch)
+    radius = 35  # This is a placeholder value, you might need to adjust it based on the image scale
+
+    # Draw circles for each bubble coordinate
+    for coord in bubble_coordinates:
+        x, y = coord
+        draw.ellipse((x-radius, y-radius, x+radius, y+radius), outline="red", width=3)
+
+    # Save the image
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    output_path = os.path.join(output_folder, filename)
+    img.save(output_path)
+    print(f"Visualization saved at {output_path}")
+
+
 def app():
     start = time.time()
     print("Running autograder...")
@@ -358,6 +384,9 @@ def app():
     marking_scheme_img = read_image(marking_scheme_file, enhance_contrast_val)
     bubble_coordinates, choice_distribution = get_coordinates_of_bubbles(
         config)
+    # Call the function to save the visualization
+    save_bubble_coordinates_visualization(template_file, bubble_coordinates, output_dir, "bubble_coordinates_visualization.png")
+
     marking_scheme = get_answers(
         template_img, marking_scheme_img, bubble_coordinates, is_marking_scheme=True, show_intermediate_results=debug)
     per_answer_time_list = []
