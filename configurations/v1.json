@@ -20,18 +20,18 @@
         }
     },
     "bubble_coordinates" : {
-        "starting_x" : 390,
-        "starting_y" : 510,
-        "x_offset" : 111,
-        "y_offset" : 92.3,
-        "x_column_offset" : 780,
-        "x_adjustment" : 1.8,
+        "starting_x" : 317.5,
+        "starting_y" : 480,
+        "x_offset" : 115,
+        "y_offset" : 96.2,
+        "x_column_offset" : 757,
+        "x_adjustment" : 0,
         "columns" : {
             "2": {
-                "starting_y" : 515
+                "starting_y" : 470
             },
             "3" : {
-                "starting_y" : 520
+                "starting_y" : 470
             }
         }
     },
