@@ -102,6 +102,43 @@ def get_coordinates_of_bubbles(config):
     return coordinates, choice_distribution
 
 
+def get_coordinates_of_bubbles_v2(config):
+    # y = x/105 + 143
+    # starting x coordinate of the first bubble
+    x = config['bubble_coordinates']['starting_x']
+    # starting y coordinate of the first bubble
+    y = config['bubble_coordinates']['starting_y']
+    x_offset = config['bubble_coordinates']['x_offset']
+    y_offset = config['bubble_coordinates']['y_offset']
+    x_column_offset = config['bubble_coordinates']['x_column_offset']
+    coordinates = []
+
+    for i in range(3):  # for every column
+        # Determine number of rows for each column
+        num_rows = 30 if i != 2 else 20
+
+        if i == 1:
+            y = config['bubble_coordinates']['columns']['2']['starting_y']
+        if i == 2:
+            y = config['bubble_coordinates']['columns']['3']['starting_y']
+        
+        for j in range(num_rows):  # for every question
+            for k in range(5):  # for every choice
+                __x_offset = k*x_offset
+                __y_offset = j*y_offset
+                x_i = x+__x_offset
+                y_i = y+__y_offset
+                a = [x_i, y_i]
+                coordinates.append(a)
+            
+            x = x - config['bubble_coordinates']['x_adjustment']
+        x += x_column_offset
+
+    # The number of choices of each question in a sequential manner
+    choice_distribution = [5 for i in range(config['num_questions'])]
+    return coordinates, choice_distribution
+
+
 def get_corresponding_points(points, H):
     points = np.array(points)
     x = points.shape[0]
@@ -278,6 +315,7 @@ def get_configuration_parameter(cmd_line_argument, config_file_parameter):
         return cmd_line_argument
     return config_file_parameter
 
+
 def save_bubble_coordinates_visualization(template_path, bubble_coordinates, output_folder, filename="bubbles_visualization.png"):
     # Load the template image
     img = Image.open(template_path)
@@ -289,7 +327,7 @@ def save_bubble_coordinates_visualization(template_path, bubble_coordinates, out
     # we are assuming a general value. However, if you know the DPI (dots per inch) or the scale of the image, 
     # you can adjust this value accordingly to represent 5mm.
     # For example, if you know the image is at 300 DPI, then 5mm is roughly 59 pixels (5mm * 300 DPI / 25.4 mm/inch)
-    radius = 35  # This is a placeholder value, you might need to adjust it based on the image scale
+    radius = 20  # This is a placeholder value, you might need to adjust it based on the image scale
 
     # Draw circles for each bubble coordinate
     for coord in bubble_coordinates:
@@ -302,6 +340,27 @@ def save_bubble_coordinates_visualization(template_path, bubble_coordinates, out
     output_path = os.path.join(output_folder, filename)
     img.save(output_path)
     print(f"Visualization saved at {output_path}")
+
+
+def visualize_marking_scheme_answers(template_path, bubble_coordinates, marking_scheme_answers, output_folder, filename="marking_scheme_verify.png"):
+    # Open the template image
+    img = Image.open(template_path)
+    draw = ImageDraw.Draw(img)
+    
+    # Color for filled bubbles
+    fill_color = 'red'
+
+    # Iterate through the marking scheme answers and bubble coordinates together
+    for coordinate, answer in zip(bubble_coordinates, marking_scheme_answers):
+        x, y = coordinate
+        if answer == 1:  # If the bubble is filled
+            # Draw a circle on the template
+            # For this example, I'm using a radius of 10. You can adjust as needed.
+            draw.ellipse([(x-10, y-10), (x+10, y+10)], outline=fill_color, fill=fill_color)
+
+    # Save the image with the marked answers to the output directory
+    output_path = os.path.join(output_folder, filename)
+    img.save(output_path)
 
 
 def app():
@@ -382,13 +441,14 @@ def app():
 
     template_img = read_image(template_file, enhance_contrast_val)
     marking_scheme_img = read_image(marking_scheme_file, enhance_contrast_val)
-    bubble_coordinates, choice_distribution = get_coordinates_of_bubbles(
-        config)
+
+    bubble_coordinates, choice_distribution = get_coordinates_of_bubbles_v2(config)
+    # bubble_coordinates, choice_distribution = get_bubble_coordinates_using_structure(template_file)
     # Call the function to save the visualization
     save_bubble_coordinates_visualization(template_file, bubble_coordinates, output_dir, "bubble_coordinates_visualization.png")
-
     marking_scheme = get_answers(
         template_img, marking_scheme_img, bubble_coordinates, is_marking_scheme=True, show_intermediate_results=debug)
+    visualize_marking_scheme_answers(template_file, bubble_coordinates, marking_scheme, output_dir)
     per_answer_time_list = []
     i = 0
 
