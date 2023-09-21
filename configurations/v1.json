@@ -20,22 +20,22 @@
         }
     },
     "bubble_coordinates" : {
-        "starting_x" : 317.5,
-        "starting_y" : 480,
+        "starting_x" : 316,
+        "starting_y" : 479,
         "x_offset" : 115,
         "y_offset" : 96.2,
-        "x_column_offset" : 757,
+        "x_column_offset" : 755,
         "x_adjustment" : 0,
         "columns" : {
             "2": {
-                "starting_y" : 470
+                "starting_y" : 479
             },
             "3" : {
-                "starting_y" : 470
+                "starting_y" : 479
             }
         }
     },
     "image_processing" : {
-        "enhance_contrast" : 11
+        "enhance_contrast" : 10
     }
 }
