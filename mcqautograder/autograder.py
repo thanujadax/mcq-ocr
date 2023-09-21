@@ -13,10 +13,13 @@ import csv
 import time
 from statistics import mean
 import json
+import scipy
+from scipy import signal
 
 
 FINAL_MARK = 'mark'
 FILE_NAME = 'file_name'
+PIXEL_THRESHOLD = 15 # number of active pixels in the search neighborhood
 
 
 def read_image(path, enhance_contrast_val):
@@ -154,8 +157,19 @@ def get_corresponding_points(points, H):
             correspondingPoints[i][2]
         correspondingPoints[i][1] = correspondingPoints[i][1] / \
             correspondingPoints[i][2]
+        
+    # Adjusting
+    delta_x = -4  # The observed shift in the x direction
+    delta_y = -9  # The observed shift in the y direction
+
+    # Apply the shift to each point in correspondingPoints
+    adjusted_points = [(x[0] + delta_x, x[1] + delta_y) for x in correspondingPoints]
+    if isinstance(correspondingPoints, np.ndarray):
+        adjusted_points = np.array(adjusted_points)
+
     # Returning the corresponding points for the 2nd image related to 1st image
-    return correspondingPoints
+    #return correspondingPoints
+    return adjusted_points
 
 
 def check_neighbours_pixels(img, points, is_marking_scheme=True, show_intermediate_results=False):
@@ -190,23 +204,67 @@ def check_neighbours_pixels(img, points, is_marking_scheme=True, show_intermedia
                 if (binaryImg[k][j]):
                     ans += 1
         answers[i] = ans
-    answers = answers > 0
+    answers = answers > PIXEL_THRESHOLD
     return answers.astype('int')
 
 
-def get_answers(img1, img2, points, is_marking_scheme, show_intermediate_results=False):
+def check_bubbles_using_convolution(img, points, threshold=0.5, bubble_diameter=25, visualize_convolution=False):
+    # Convert PIL image to grayscale numpy array
+    img_gray = np.array(img.convert('L'))
+    
+    # Create a binary circular kernel of diameter `bubble_diameter`
+    radius = bubble_diameter // 2
+    y, x = np.ogrid[-radius:radius+1, -radius:radius+1]
+    mask = x**2 + y**2 <= radius**2
+    
+    kernel = np.zeros((bubble_diameter, bubble_diameter))
+    kernel[mask] = 1
+    
+    # Perform convolution
+    convolved = signal.convolve2d(img_gray, kernel, mode='same', boundary='symm')
+    
+    # Invert convolved image (Higher values should now correspond to filled bubbles)
+    convolved = convolved.max() - convolved
+    
+    # Determine answers based on threshold
+    answers = np.array([convolved[int(y), int(x)] for (x, y) in points]) > threshold
+    
+    # Visualization (if required)
+    if visualize_convolution:
+        plt.figure(figsize=(15, 15))
+        plt.imshow(convolved, cmap='hot')
+        plt.colorbar()
+        plt.scatter(*zip(*points), s=10, c='blue', marker='o')
+        plt.title("Convolution Output")
+        plt.show()
+    
+    return answers.astype('int')
+
+
+def get_answers(img1, img2, bubble_coordinates, is_marking_scheme, show_intermediate_results=False):
     # Find homography Matrix
     homography = get_homography(img1, img2)
     # Find related points in the two image
-    correspondingPoints = get_corresponding_points(points, homography)
-    # plt.figure(figsize=(10,10))
-    # plt.imshow(np.array(img2),cmap='gray')
-    # plt.scatter(correspondingPoints[:,0],correspondingPoints[:,1])
-    # plt.show()
+    correspondingPoints = get_corresponding_points(bubble_coordinates, homography)
+    if(show_intermediate_results):
+        plt.figure(figsize=(10,10))
+        plt.imshow(np.array(img2),cmap='gray')
+        plt.scatter(correspondingPoints[:,0],correspondingPoints[:,1])
+        plt.title("Corresponding Points - get_answers")
+        plt.show()
 
     # Check neighbouring pixels and get whether option is marked or not
     answer = check_neighbours_pixels(
         img2, correspondingPoints, is_marking_scheme, show_intermediate_results)
+    '''
+    bubble_diameter = 25  # You might need to adjust this based on the actual size of bubbles in your image
+    convolution_threshold = 15  # Example threshold; adjust as necessary
+
+    answer = check_bubbles_using_convolution(img2, points, convolution_threshold, 
+                                             bubble_diameter, visualize_convolution=True)
+    '''
+    
+
     return answer
 
 
