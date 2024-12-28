@@ -1,6 +1,6 @@
 {
     "version" : "v1",
-    "num_questions" : 90,
+    "num_questions" : 80,
     "inputs" : {
         "template" : "samples/templates/1.jpg",
         "marking_scheme" : "samples/marking_schemes/1.jpg",
@@ -20,22 +20,22 @@
         }
     },
     "bubble_coordinates" : {
-        "starting_x" : 390,
-        "starting_y" : 510,
-        "x_offset" : 111,
-        "y_offset" : 92.3,
-        "x_column_offset" : 780,
-        "x_adjustment" : 1.8,
+        "starting_x" : 435,
+        "starting_y" : 390,
+        "x_offset" : 107.5,
+        "y_offset" : 90.2,
+        "x_column_offset" : 710,
+        "x_adjustment" : 0,
         "columns" : {
             "2": {
-                "starting_y" : 515
+                "starting_y" : 390
             },
             "3" : {
-                "starting_y" : 520
+                "starting_y" : 390
             }
         }
     },
     "image_processing" : {
-        "enhance_contrast" : 11
+        "enhance_contrast" : 10
     }
 }
