@@ -21,7 +21,7 @@
     },
     "bubble_coordinates" : {
         "starting_x" : 316,
-        "starting_y" : 479,
+        "starting_y" : 100,
         "x_offset" : 115,
         "y_offset" : 96.2,
         "x_column_offset" : 755,
