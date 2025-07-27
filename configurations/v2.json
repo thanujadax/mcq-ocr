@@ -1,6 +1,6 @@
 {
     "version" : "v2",
-    "num_questions" : 90,
+    "num_questions" : 80,
     "inputs" : {
         "template" : "samples/templates/1.jpg",
         "marking_scheme" : "samples/marking_schemes/2.jpg",
@@ -8,7 +8,7 @@
         "students_list" : "samples/students_list.csv"
     },
     "outputs" : {
-        "output_directory" : "output/",
+        "output_directory" : "In24-CS1033-output_v2/",
         "output_csv_file_name" : "v2_output.csv",
         "show_marked_answer" : false,
         "save_marked_answer" : true,
@@ -20,18 +20,18 @@
         }
     },
     "bubble_coordinates" : {
-        "starting_x" : 390,
-        "starting_y" : 510,
-        "x_offset" : 111,
-        "y_offset" : 92.3,
-        "x_column_offset" : 780,
-        "x_adjustment" : 1.8,
+        "starting_x" : 465,
+        "starting_y" : 626,
+        "x_offset" : 100.0,
+        "y_offset" : 84.0,
+        "x_column_offset" : 655,
+        "x_adjustment" : 0.8,
         "columns" : {
             "2": {
-                "starting_y" : 515
+                "starting_y" : 626
             },
             "3" : {
-                "starting_y" : 520
+                "starting_y" : 626
             }
         }
     },

@@ -6,7 +6,12 @@ MCQAutoGrader is designed to take a list of scanned answer scripts (bubble sheet
 
 The project uses [poetry](https://python-poetry.org/docs/) for dependency management and packaging. To set up the dependencies run the following command after cloning/downloading the repository.
 
-`poetry install`
+```bash
+
+poetry install
+source $(poetry env info --path)/bin/activate
+
+```
 
 ## Using the autograder tool
 To find more information about the tool execute the following command after you have set up the project:
@@ -15,7 +20,7 @@ To find more information about the tool execute the following command after you 
 
 Typical use of the tool require the template, marking scheme, directory containing scanned answer scripts, a list of students as a csv file to be provided as follows. Refer the [samples](/samples/) directory.
 
-`python3 mcqautograder/autograder.py --template samples/template.jpg --markingscheme samples/marking_scheme.jpg --answers samples/answers/ --studentslist samples/students_list.csv`
+`python3 mcqautograder/autograder.py --template 2023_sample/template/1.jpg --markingscheme 2023_sample/marking_schemes/1.jpg --answers 2023_sample/answers/ --studentslist 2023_sample/students_list.csv`
 
 ## Using the multiversion_autograder tool
 
