@@ -1,0 +1,20 @@
+{
+    "metadata": {
+        "num_questions": 80,
+        "column_row_distribution": [30, 30, 30]
+    },
+    "bubble_configs": {
+        "x_offset": 10.5,
+        "y_offset": 15,
+        "columns": {
+            "1": {
+                "starting_x": 435,
+                "starting_y": 390
+            },
+            "2": {
+                "starting_x": 435,
+                "starting_y": 390
+            }
+        }
+    }
+}

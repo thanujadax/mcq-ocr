@@ -1,0 +1,13 @@
+poetry install
+source $(poetry env info --path)/bin/activate
+
+poetry add "scipy==1.14.1"
+
+
+python3 mcqautograder/autograder.py --template new_samples/templates/1.jpg --markingscheme new_samples/marking_schemes/1.jpg --answers new_samples/answers/ --studentslist new_samples/students_list.csv --debug
+
+python3 mcqautograder/multiversion_autograder.py --templates new_samples/templates/ --markingschemes new_samples/marking_schemes/ --answers new_samples/answers/ --studentslist new_samples/students_list.csv --numversions 2
+
+
+## v1
+python3 mcqautograder/autograder.py --template In24-CS1033-Marking/blank_templates/V1.jpg --markingscheme In24-CS1033-Marking/marking-scheme/V1.jpg --answers In24-CS1033-Marking/student-answers/V1/ --studentslist In24-CS1033-Marking/student_list/V1.csv --config configurations/v1.json

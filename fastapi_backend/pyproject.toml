@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "fastapi-backend"
+version = "0.1.0"
+description = "Backend of the MCQ marking system using fastapi"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.116.1"
+uvicorn = {extras = ["standard"], version = "^0.35.0"}
+pydantic = "^2.11.7"
+sqlalchemy = "^2.0.43"
+aiofiles = "^24.1.0"
+python-multipart = "^0.0.12"
+asyncpg = "^0.29.0"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.1"
+aio-pika = "^9.4.3"
+pydantic-settings = "^2.6.0"
+reportlab = "^4.4.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

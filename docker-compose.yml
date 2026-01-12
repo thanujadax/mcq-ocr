@@ -1,0 +1,147 @@
+services:
+  # Frontend - Next.js (Development)
+  frontend:
+    build:
+      context: ./next_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./next_frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Backend - FastAPI (Development)
+  backend:
+    build:
+      context: ./fastapi_backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - NFS_SHARED_PATH=/shared
+      - DATABASE_URL=postgresql://mcq_user:mcq_password@postgres:5432/mcq_database
+      - RABBITMQ_URL=amqp://admin:secret@rabbitmq:5672
+    volumes:
+      - ./fastapi_backend:/app
+      - nfs_storage:/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      shared-storage:
+        condition: service_started
+    restart: unless-stopped
+    user: "1000:1000" # Add user permissions for shared storage
+
+  # Database - PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: mcq-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: mcq_database
+      POSTGRES_USER: mcq_user
+      POSTGRES_PASSWORD: mcq_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./fastapi_backend/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcq_user -d mcq_database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # Message Queue
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    ports:
+      - "5673:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin # change later and make it more secure
+      RABBITMQ_DEFAULT_PASS: secret # change later and make it more secure
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Simple shared storage using bind mount (works on all platforms)
+  shared-storage:
+    image: alpine:latest
+    container_name: shared-storage
+    volumes:
+      - nfs_storage:/shared
+    command: >
+      sh -c "
+        echo 'Setting up shared storage...' &&
+        mkdir -p /shared/uploads /shared/templates /shared/results /shared/reports /shared/temp /shared/backups &&
+        mkdir -p /shared/uploads/answer_sheets /shared/uploads/templates /shared/uploads/marking_schemes &&
+        mkdir -p /shared/templates/configs /shared/templates/processed &&
+        chmod -R 777 /shared &&
+        chown -R 1000:1000 /shared &&
+        echo 'Shared storage ready' &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  # Legacy MCQ marking system (keeping for compatibility)
+  mcq-marking-system:
+    build:
+      context: ./mcq_marking
+      dockerfile: Dockerfile
+    volumes:
+      - ./mcq_marking:/app
+      - nfs_storage:/shared # Mount NFS storage
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      shared-storage:
+        condition: service_started
+    environment:
+      - RABBITMQ_URL=amqp://admin:secret@rabbitmq:5672 # change later and make it more secure
+      - NFS_SHARED_PATH=/shared
+      - INDEX_TASK_QUEUE=index_tasks
+      - TEMPLATE_CONFIG_QUEUE=template_config_queue
+      - MARKING_JOB_QUEUE=marking_job_queue
+      - MARKING_CONFIG_QUEUE=marking_scheme_config_queue
+      - MARKING_JOB_RESULTS_QUEUE=marking_job_results
+      - TEMPLATE_CONFIG_RESULTS_QUEUE=template_config_results
+      - MARKING_CONFIG_RESULTS_QUEUE=marking_scheme_config_results
+    restart: unless-stopped
+
+  # index-recognizer:
+  #   build:
+  #     context: ./index_recognision
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - nfs_storage:/shared # Mount NFS storage
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #     shared-storage:
+  #       condition: service_started
+  #   environment:
+  #   - RABBITMQ_URL=amqp://admin:secret@rabbitmq:5672
+  #   - RABBITMQ_INCOMING_QUEUE=index_tasks
+  #   - RABBITMQ_OUTGOING_QUEUE=index_results
+  #   restart: unless-stopped
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
+  nfs_storage:
