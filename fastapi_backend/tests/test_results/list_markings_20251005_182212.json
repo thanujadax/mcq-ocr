@@ -1,0 +1,29 @@
+{
+  "test_name": "list_markings",
+  "timestamp": "20251005_182212",
+  "request": {},
+  "response": [
+    {
+      "id": 1,
+      "name": "Marking Job 1",
+      "description": "Description for job 1",
+      "status": "pending",
+      "created_at": "2023-10-05T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Marking Job 2",
+      "description": "Description for job 2",
+      "status": "pending",
+      "created_at": "2023-10-05T10:30:00Z"
+    },
+    {
+      "id": 3,
+      "name": "Marking Job 3",
+      "description": "Description for job 3",
+      "status": "pending",
+      "created_at": "2023-10-05T10:30:00Z"
+    }
+  ],
+  "status_code": 200
+}

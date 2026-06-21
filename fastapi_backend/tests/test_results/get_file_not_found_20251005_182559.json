@@ -1,0 +1,11 @@
+{
+  "test_name": "get_file_not_found",
+  "timestamp": "20251005_182559",
+  "request": {
+    "file_name": "nonexistent.pdf"
+  },
+  "response": {
+    "detail": "File not found"
+  },
+  "status_code": 404
+}

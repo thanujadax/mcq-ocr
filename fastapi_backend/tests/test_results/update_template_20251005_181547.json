@@ -1,0 +1,16 @@
+{
+  "test_name": "update_template",
+  "timestamp": "20251005_181547",
+  "request": {
+    "name": "Updated Template Name",
+    "description": "Updated description"
+  },
+  "response": {
+    "id": 1,
+    "name": "Updated Template Name",
+    "description": "Updated description",
+    "status": "completed",
+    "updated_at": "2023-10-05T10:35:00Z"
+  },
+  "status_code": 200
+}

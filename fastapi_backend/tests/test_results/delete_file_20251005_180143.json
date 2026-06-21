@@ -1,0 +1,13 @@
+{
+  "test_name": "delete_file",
+  "timestamp": "20251005_180143",
+  "request": {
+    "file_id": 1
+  },
+  "response": {
+    "status": "success",
+    "message": "File deleted successfully",
+    "file_id": 1
+  },
+  "status_code": 200
+}

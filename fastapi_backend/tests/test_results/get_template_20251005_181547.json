@@ -1,0 +1,17 @@
+{
+  "test_name": "get_template",
+  "timestamp": "20251005_181547",
+  "request": {
+    "id": 1
+  },
+  "response": {
+    "id": 1,
+    "name": "Test Template",
+    "description": "Template for testing",
+    "config_type": "grid_based",
+    "status": "completed",
+    "num_questions": 10,
+    "created_at": "2023-10-05T10:30:00Z"
+  },
+  "status_code": 200
+}

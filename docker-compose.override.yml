@@ -1,0 +1,71 @@
+# Dev override. Auto-merged with docker-compose.yml when you run `docker compose up`.
+# Production runs use `docker compose -f docker-compose.yml up -d` to skip this file.
+
+services:
+  nginx:
+    profiles: ["donotstart"]
+
+  frontend:
+    image: mcq-frontend:dev
+    build:
+      context: ./next_frontend
+      dockerfile: Dockerfile.dev
+      args:
+        NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
+    pull_policy: build
+    ports:
+      - "3000:3000"
+    environment:
+      # Browser-side calls use the host-published port.
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      # Server-side (middleware/SSR) reaches the backend over the docker network.
+      - INTERNAL_BACKEND_URL=http://backend:8000
+    volumes:
+      - ./next_frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+  backend:
+    image: mcq-backend:dev
+    build:
+      context: ./fastapi_backend
+      dockerfile: Dockerfile.dev
+    pull_policy: build
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - COOKIE_SECURE=false
+      - COOKIE_SAMESITE=lax
+    volumes:
+      - ./fastapi_backend:/app
+
+  postgres:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  rabbitmq:
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+
+  mcq-marking-system:
+    image: mcq-marking:dev
+    build:
+      context: ./mcq_marking
+      dockerfile: Dockerfile.dev
+    pull_policy: build
+    volumes:
+      - ./mcq_marking:/app
+      - nfs_storage:/shared:rw
+
+  index-recognizer:
+    image: mcq-recognizer:dev
+    build:
+      context: ./index_recognision
+      dockerfile: Dockerfile.dev
+    pull_policy: build
+    volumes:
+      - ./index_recognision:/app
+      - nfs_storage:/shared

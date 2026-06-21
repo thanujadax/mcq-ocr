@@ -1,0 +1,14 @@
+{
+  "test_name": "generate_pdf_invalid",
+  "timestamp": "20251005_182559",
+  "request": {
+    "title": "",
+    "questions": 0,
+    "options": 4,
+    "max_qpc": 3
+  },
+  "response": {
+    "detail": "Questions must be greater than 0"
+  },
+  "status_code": 400
+}

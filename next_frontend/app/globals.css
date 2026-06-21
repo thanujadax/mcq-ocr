@@ -1,0 +1,70 @@
+/* PLEASE NOTE: THESE TAILWIND IMPORTS SHOULD NEVER BE DELETED */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
+
+/* Force CSS refresh and fix layout issues */
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Force layout fixes - immediate effect */
+@layer base {
+  * {
+    box-sizing: border-box !important;
+  }
+
+  html {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#__next {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Fix for mobile viewport issues */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}

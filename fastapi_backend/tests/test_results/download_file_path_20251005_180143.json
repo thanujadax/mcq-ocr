@@ -1,0 +1,14 @@
+{
+  "test_name": "download_file_path",
+  "timestamp": "20251005_180143",
+  "request": {
+    "method": "path",
+    "path": "uploads/templates/1/testfile_123456.txt"
+  },
+  "response": {
+    "content_type": "text/plain",
+    "filename": "testfile_123456.txt",
+    "file_size": 26
+  },
+  "status_code": 200
+}

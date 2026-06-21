@@ -1,0 +1,155 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: mcq-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME:?DOMAIN_NAME required}
+      - NGINX_ENVSUBST_FILTER=^DOMAIN_NAME$$
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - mcq-network
+
+  frontend:
+    image: ${DOCKER_REGISTRY:?DOCKER_REGISTRY required}/edumark:frontend-${IMAGE_TAG:-latest}
+    container_name: mcq-frontend
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      # Server-side (middleware/SSR) reaches the backend over the docker network.
+      - INTERNAL_BACKEND_URL=http://backend:8000
+    restart: unless-stopped
+    networks:
+      - mcq-network
+
+  backend:
+    image: ${DOCKER_REGISTRY:?}/edumark:backend-${IMAGE_TAG:-latest}
+    container_name: mcq-backend
+    expose:
+      - "8000"
+    env_file:
+      - ./.env.app
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - nfs_storage:/shared:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      shared-storage:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    user: "1000:1000"
+    networks:
+      - mcq-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: mcq-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./fastapi_backend/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - mcq-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: mcq-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - mcq-network
+
+  shared-storage:
+    image: alpine:latest
+    container_name: mcq-shared-storage
+    volumes:
+      - nfs_storage:/shared
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /shared/uploads/answer_sheets /shared/uploads/templates /shared/uploads/marking_schemes \
+                 /shared/templates/configs /shared/templates/processed \
+                 /shared/results/markings \
+                 /shared/intermediate/templates \
+                 /shared/reports /shared/temp /shared/backups && \
+        chmod -R 775 /shared && \
+        chown -R 1000:1000 /shared
+    restart: "no"
+    networks:
+      - mcq-network
+
+  mcq-marking-system:
+    image: ${DOCKER_REGISTRY:?}/edumark:marking-${IMAGE_TAG:-latest}
+    container_name: mcq-marking-system
+    env_file:
+      - ./.env.app
+    volumes:
+      - nfs_storage:/shared:rw
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      shared-storage:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    user: "1000:1000"
+    networks:
+      - mcq-network
+
+  index-recognizer:
+    image: ${DOCKER_REGISTRY:?}/edumark:recognizer-${IMAGE_TAG:-latest}
+    container_name: mcq-index-recognizer
+    env_file:
+      - ./.env.app
+    volumes:
+      - nfs_storage:/shared
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      shared-storage:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks:
+      - mcq-network
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
+  nfs_storage:
+
+networks:
+  mcq-network:
+    driver: bridge

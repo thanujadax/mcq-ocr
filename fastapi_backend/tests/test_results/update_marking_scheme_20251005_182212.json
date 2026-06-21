@@ -1,0 +1,20 @@
+{
+  "test_name": "update_marking_scheme",
+  "timestamp": "20251005_182212",
+  "request": {
+    "marking_scheme_config": {
+      "question_1": 5,
+      "question_2": 10
+    }
+  },
+  "response": {
+    "id": 1,
+    "status": "marking_scheme_configured",
+    "config": {
+      "question_1": 5,
+      "question_2": 10
+    },
+    "updated_at": "2023-10-05T10:45:00Z"
+  },
+  "status_code": 200
+}

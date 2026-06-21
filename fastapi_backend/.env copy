@@ -1,0 +1,43 @@
+# =============================================================================
+# USED SETTINGS - These are actively used in the backend code
+# =============================================================================
+
+# Database Configuration - USED in database.py
+DATABASE_URL=postgresql://mcq_user:mcq_password@localhost:5432/mcq_database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=mcq_database
+DATABASE_USER=mcq_user
+DATABASE_PASSWORD=mcq_password
+DATABASE_POOL_SIZE=10
+DATABASE_MAX_OVERFLOW=20
+DATABASE_POOL_RECYCLE=300
+DATABASE_ECHO=false
+
+# Application Configuration - USED in main.py
+APP_NAME=MCQ OCR System
+APP_VERSION=1.0.0
+DEBUG=true
+ENVIRONMENT=development
+ALLOWED_HOSTS=*
+
+# Shared Storage - USED in shared_storage.py
+NFS_SHARED_PATH=/shared
+
+# RabbitMQ Configuration - USED in queue.py
+RABBITMQ_URL=amqp://admin:secret@localhost:5672
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_USER=admin
+RABBITMQ_PASSWORD=secret
+
+# Authentication & Security - USED in auth.py
+SECRET_KEY=your-secret-key-change-this-in-production
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
+SUPER_USER_EMAIL=superadmin@uom.lk
+SUPER_USER_PASSWORD=$2a$12$qAMxLPnimk9bnf8zEINXD.2wWdMJmtHTUmKINN2bjc8pDtr9/T4Ne
+COOKIE_SECURE=true
+COOKIE_SAMESITE=none
+COOKIE_HTTPONLY=true

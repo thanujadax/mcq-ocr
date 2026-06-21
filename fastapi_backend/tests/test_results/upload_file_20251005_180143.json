@@ -1,0 +1,19 @@
+{
+  "test_name": "upload_file",
+  "timestamp": "20251005_180143",
+  "request": {
+    "filename": "testfile.txt",
+    "content_type": "text/plain",
+    "file_type": "template",
+    "file_size": 26
+  },
+  "response": {
+    "file_id": 1,
+    "filename": "testfile_123456.txt",
+    "file_size": 26,
+    "file_type": "template",
+    "status": "uploaded",
+    "path": "uploads/templates/1/testfile_123456.txt"
+  },
+  "status_code": 200
+}

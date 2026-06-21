@@ -1,0 +1,12 @@
+{
+  "test_name": "delete_template",
+  "timestamp": "20251005_181547",
+  "request": {
+    "id": 1
+  },
+  "response": {
+    "status": "success",
+    "message": "Template 1 deleted successfully"
+  },
+  "status_code": 200
+}

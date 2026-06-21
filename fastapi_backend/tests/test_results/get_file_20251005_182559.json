@@ -1,0 +1,13 @@
+{
+  "test_name": "get_file",
+  "timestamp": "20251005_182559",
+  "request": {
+    "file_name": "test.pdf"
+  },
+  "response": {
+    "content_type": "application/pdf",
+    "filename": "test.pdf",
+    "file_size": 1024
+  },
+  "status_code": 200
+}

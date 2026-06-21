@@ -1,0 +1,14 @@
+{
+  "test_name": "download_file_id",
+  "timestamp": "20251005_180005",
+  "request": {
+    "method": "file_id",
+    "file_id": 1
+  },
+  "response": {
+    "content_type": "text/plain",
+    "filename": "testfile_123456.txt",
+    "file_size": 26
+  },
+  "status_code": 200
+}
